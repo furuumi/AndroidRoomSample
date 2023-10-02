@@ -13,15 +13,28 @@ import kotlinx.coroutines.withContext
 
 class WordViewModel(private val repository: WordRepository) : ViewModel() {
 
+    // Flowにしているのでvalのデータだが自動的に更新される
     val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
 
-    fun insert(word: Word) = viewModelScope.launch {
-        withContext(Dispatchers.IO) {
-            repository.insert(word)
-        }
+    /*
+    viewModelScope.launch
+    →viewModelのScopeでスレッド生成
+    Dispatchers.IO
+    →ディスクまたはNWのI/Oを実行するのに適したスレッド
+    Dispatchers.Main
+    →メインスレッド(UI用)
+    Dispatchers.Default
+    →メインスレッド外部で負荷の高い処理を行うときに使う(JSONやXMLの解析など？)
+     */
+    fun insert(word: Word) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insert(word)
     }
 }
 
+/*
+　ViewModelProvider.Factory を使用することにより、
+　ViewModelは構成変更(回転などでアクティビティが終了するなど)があっても存在し続けます
+ */
 class WordViewModelFactory(private val repository: WordRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WordViewModel::class.java)) {
