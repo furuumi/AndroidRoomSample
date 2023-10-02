@@ -11,10 +11,10 @@ class WordsApplication : Application() {
     // →データベースへのデータの入力は UIライフサイクルとは関連していないため、viewModelScopeのようなCoroutineScopeを使うべきではない。 関連しているのはアプリのライフサイクルです。
     // SupervisorJobにしておくことでコルーチン内の処理で例外が起きても親には伝搬しない
     // →DBへの初回データ投入で失敗してもアプリは落ちない
-    val applicationScope = CoroutineScope(SupervisorJob())
+    private val applicationScope = CoroutineScope(SupervisorJob())
 
     // DBを取得する。初回は生成まで行う
-    val database by lazy { AppDatabase.getInstance(this, applicationScope) }
+    private val database by lazy { AppDatabase.getInstance(this, applicationScope) }
 
 
     val wordRepository by lazy { WordRepository(database.wordDao()) }

@@ -24,6 +24,8 @@ data class Word (
  */
 @Dao
 interface WordDao {
+
+    // kotlinx-coroutines の Flow を使うとDBが更新された後のFlowの更新に必要なコードがRoomで自動生成されます。
     @Query("SELECT * FROM word_table ORDER BY word ASC")
     fun getAlphabetizedWords(): Flow<List<Word>>
 
